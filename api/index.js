@@ -23,7 +23,7 @@ const port = 4000;
 const photosMiddleware = multer({ dest: "/tmp" });
 const bucket = process.env.AWS_BUCKET;
 const salt = bcrypt.genSaltSync(10);
-app.get("/test", (req, res) => {
+app.get("/api/test", (req, res) => {
   res.send("Hello World!");
 });
 
@@ -70,7 +70,7 @@ const deleteFromS3 = async (url) => {
   }
 };
 
-app.post("/register", async (req, res) => {
+app.post("/api/register", async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   const { username, password } = req.body;
   const isUsernamePresent = await User.findOne({ username });
@@ -87,7 +87,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   const { username, password } = req.body;
   const userDoc = await User.findOne({ username });
@@ -114,7 +114,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/api/profile", async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   const { token } = req.cookies;
   if (!token) return res.json("User not logged in");
@@ -124,11 +124,11 @@ app.get("/profile", async (req, res) => {
   });
 });
 
-app.post("/logout", (req, res) => {
+app.post("/api/logout", (req, res) => {
   res.cookie("token", "").json("ok");
 });
 
-app.post("/post", photosMiddleware.single("file"), async (req, res) => {
+app.post("/api/post", photosMiddleware.single("file"), async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   // const { originalname, path, mimetype } = req?.file;
   const { token } = req.cookies;
@@ -150,7 +150,7 @@ app.post("/post", photosMiddleware.single("file"), async (req, res) => {
   });
 });
 
-app.get("/post", async (req, res) => {
+app.get("/api/post", async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   res.json(
     await Post.find()
@@ -160,14 +160,14 @@ app.get("/post", async (req, res) => {
   );
 });
 
-app.get("/post/:id", async (req, res) => {
+app.get("/api/post/:id", async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   const { id } = req.params;
   const postDoc = await Post.findById(id).populate("author", ["username"]);
   res.json(postDoc);
 });
 
-app.delete("/post/:id", async (req, res) => {
+app.delete("/api/post/:id", async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   const { id } = req.params;
   const data = await Post.findByIdAndDelete(id);
@@ -178,7 +178,7 @@ app.delete("/post/:id", async (req, res) => {
   res.json({ data });
 });
 
-app.post("/post/photo", photosMiddleware.single("file"), async (req, res) => {
+app.post("/api/post/photo", photosMiddleware.single("file"), async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   const { originalname, path, mimetype } = req?.file;
   const { token } = req.cookies;
@@ -193,7 +193,7 @@ app.post("/post/photo", photosMiddleware.single("file"), async (req, res) => {
   });
 });
 
-app.put("/post/photo", photosMiddleware.single("file"), async (req, res) => {
+app.put("/api/post/photo", photosMiddleware.single("file"), async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   const { originalname, path, mimetype } = req?.file;
   const { token } = req.cookies;
@@ -216,7 +216,7 @@ app.put("/post/photo", photosMiddleware.single("file"), async (req, res) => {
     res.json(url);
   });
 });
-app.put("/delete/cover", async (req, res) => {
+app.put("/api/delete/cover", async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   const { id, cover } = req.body;
   if (cover) {
@@ -232,7 +232,7 @@ app.put("/delete/cover", async (req, res) => {
   res.json({ postDoc });
 });
 
-app.put("/post", photosMiddleware.single("file"), async (req, res) => {
+app.put("/api/post", photosMiddleware.single("file"), async (req, res) => {
   await mongoose.connect(process.env.MONGO_URI);
   const { token } = req.cookies;
   jwt.verify(token, process.env.SECRET, {}, async (err, info) => {
