@@ -10,7 +10,7 @@ import CreatePost from "./pages/CreatePost";
 import IndexPage from "./pages/IndexPage";
 import PostPage from "./pages/PostPage";
 import EditPost from "./pages/EditPost";
-axios.defaults.baseURL = "http://127.0.0.1:4000";
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 axios.defaults.withCredentials = true;
 function App() {
   return (
