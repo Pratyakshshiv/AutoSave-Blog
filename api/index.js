@@ -18,7 +18,7 @@ const cookieParser = require("cookie-parser");
 // app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: "http://127.0.0.1:5173" }));
+app.use(cors({ credentials: true}));
 const port = 4000;
 const photosMiddleware = multer({ dest: "/tmp" });
 const bucket = process.env.AWS_BUCKET;
